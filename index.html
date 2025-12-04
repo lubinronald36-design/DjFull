@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ronald DJ – Double girl.mp3</title>
+<style>
+    body {
+        background: #000;
+        color: #00ff66;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+    h1 { color: #00ff66; }
+    h2 { margin-top: 40px; }
+    button {
+        background: transparent;
+        border: 2px solid #00ff66;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 10px;
+        color: #00ff66;
+        font-size: 16px;
+    }
+    button:hover {
+        background: #00ff66;
+        color: #000;
+        cursor: pointer;
+    }
+    .progress-container {
+        width: 100%;
+        height: 10px;
+        background: #333;
+        margin-top: 10px;
+        border-radius: 5px;
+    }
+    .progress-bar {
+        height: 10px;
+        width: 0%;
+        background: red;
+        border-radius: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Ronald DJ – Double girl.mp3</h1>
+<p>Two copies of girl.mp3 so you can match up your mix.</p>
+
+<!-- TRACK A -->
+<h2>Track A</h2>
+<button onclick="playA()">▶ Play A</button>
+<button onclick="pauseA()">⏸ Pause A</button>
+<button onclick="setCueA()">🎯 Set Cue A</button>
+<button onclick="jumpCueA()">⏩ Jump Cue A</button>
+
+<div class="progress-container">
+    <div id="barA" class="progress-bar"></div>
+</div>
+
+<!-- TRACK B -->
+<h2>Track B</h2>
+<button onclick="playB()">▶ Play B</button>
+<button onclick="pauseB()">⏸ Pause B</button>
+<button onclick="setCueB()">🎯 Set Cue B</button>
+<button onclick="jumpCueB()">⏩ Jump Cue B</button>
+
+<div class="progress-container">
+    <div id="barB" class="progress-bar"></div>
+</div>
+
+<script>
+let trackA = new Audio("girl.mp3");
+let trackB = new Audio("girl.mp3");
+
+let cueA = 0;
+let cueB = 0;
+
+function playA() { trackA.play(); }
+function pauseA() { trackA.pause(); }
+function setCueA() { cueA = trackA.currentTime; }
+function jumpCueA() { trackA.currentTime = cueA; }
+
+function playB() { trackB.play(); }
+function pauseB() { trackB.pause(); }
+function setCueB() { cueB = trackB.currentTime; }
+function jumpCueB() { trackB.currentTime = cueB; }
+
+trackA.ontimeupdate = () => {
+    document.getElementById("barA").style.width =
+        (trackA.currentTime / trackA.duration) * 100 + "%";
+};
+trackB.ontimeupdate = () => {
+    document.getElementById("barB").style.width =
+        (trackB.currentTime / trackB.duration) * 100 + "%";
+};
+</script>
+
+</body>
+</html>
