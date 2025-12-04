@@ -26,25 +26,35 @@
         color: #000;
         cursor: pointer;
     }
+
     .progress-container {
         width: 100%;
-        height: 10px;
-        background: #333;
+        height: 12px;
+        background: #222;
         margin-top: 10px;
-        border-radius: 5px;
+        border-radius: 6px;
+        position: relative;
     }
     .progress-bar {
-        height: 10px;
+        height: 12px;
         width: 0%;
         background: red;
-        border-radius: 5px;
+        border-radius: 6px;
+    }
+    .cue-marker {
+        width: 3px;
+        height: 12px;
+        background: yellow;
+        position: absolute;
+        top: 0;
+        display: none;
     }
 </style>
 </head>
 <body>
 
 <h1>Ronald DJ – Double girl.mp3</h1>
-<p>Two copies of girl.mp3 so you can match up your mix.</p>
+<p>Two copies of girl.mp3 so you can match your mix.</p>
 
 <!-- TRACK A -->
 <h2>Track A</h2>
@@ -53,8 +63,9 @@
 <button onclick="setCueA()">🎯 Set Cue A</button>
 <button onclick="jumpCueA()">⏩ Jump Cue A</button>
 
-<div class="progress-container">
+<div class="progress-container" id="containerA" onclick="scrubA(event)">
     <div id="barA" class="progress-bar"></div>
+    <div id="cueAmarker" class="cue-marker"></div>
 </div>
 
 <!-- TRACK B -->
@@ -64,8 +75,9 @@
 <button onclick="setCueB()">🎯 Set Cue B</button>
 <button onclick="jumpCueB()">⏩ Jump Cue B</button>
 
-<div class="progress-container">
+<div class="progress-container" id="containerB" onclick="scrubB(event)">
     <div id="barB" class="progress-bar"></div>
+    <div id="cueBmarker" class="cue-marker"></div>
 </div>
 
 <script>
@@ -75,16 +87,45 @@ let trackB = new Audio("girl.mp3");
 let cueA = 0;
 let cueB = 0;
 
+// --- PLAY / PAUSE ---
 function playA() { trackA.play(); }
 function pauseA() { trackA.pause(); }
-function setCueA() { cueA = trackA.currentTime; }
-function jumpCueA() { trackA.currentTime = cueA; }
 
 function playB() { trackB.play(); }
 function pauseB() { trackB.pause(); }
-function setCueB() { cueB = trackB.currentTime; }
+
+// --- CUE SYSTEM ---
+function setCueA() {
+    cueA = trackA.currentTime;
+    let percent = (cueA / trackA.duration) * 100;
+    let marker = document.getElementById("cueAmarker");
+    marker.style.left = percent + "%";
+    marker.style.display = "block";
+}
+function jumpCueA() { trackA.currentTime = cueA; }
+
+function setCueB() {
+    cueB = trackB.currentTime;
+    let percent = (cueB / trackB.duration) * 100;
+    let marker = document.getElementById("cueBmarker");
+    marker.style.left = percent + "%";
+    marker.style.display = "block";
+}
 function jumpCueB() { trackB.currentTime = cueB; }
 
+// --- SCRUBBING (Dragging the red bar) ---
+function scrubA(e) {
+    let rect = e.target.getBoundingClientRect();
+    let percent = (e.clientX - rect.left) / rect.width;
+    trackA.currentTime = percent * trackA.duration;
+}
+function scrubB(e) {
+    let rect = e.target.getBoundingClientRect();
+    let percent = (e.clientX - rect.left) / rect.width;
+    trackB.currentTime = percent * trackB.duration;
+}
+
+// --- UPDATE PROGRESS BARS ---
 trackA.ontimeupdate = () => {
     document.getElementById("barA").style.width =
         (trackA.currentTime / trackA.duration) * 100 + "%";
