@@ -1,139 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Ronald DJ – Double girl.mp3</title>
-<style>
-    body {
-        background: #000;
-        color: #00ff66;
-        font-family: Arial, sans-serif;
-        padding: 20px;
-    }
-    h1 { color: #00ff66; }
-    h2 { margin-top: 40px; }
-    button {
-        background: transparent;
-        border: 2px solid #00ff66;
-        padding: 10px 20px;
-        margin: 5px;
-        border-radius: 10px;
-        color: #00ff66;
-        font-size: 16px;
-    }
-    button:hover {
-        background: #00ff66;
-        color: #000;
-        cursor: pointer;
-    }
 
-    .progress-container {
-        width: 100%;
-        height: 12px;
-        background: #222;
-        margin-top: 10px;
-        border-radius: 6px;
-        position: relative;
-    }
-    .progress-bar {
-        height: 12px;
-        width: 0%;
-        background: red;
-        border-radius: 6px;
-    }
-    .cue-marker {
-        width: 3px;
-        height: 12px;
-        background: yellow;
-        position: absolute;
-        top: 0;
-        display: none;
-    }
+<style>
+body {
+    background: #000;
+    color: #0f0;
+    font-family: Arial;
+    padding: 20px;
+}
+.track-title { font-size: 24px; margin-bottom: 10px; }
+
+.button {
+    padding: 10px 20px;
+    margin: 5px;
+    background: black;
+    border: 2px solid #0f0;
+    color: #0f0;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.progress-bar {
+    width: 100%;
+}
+
+.cue-marker {
+    position: absolute;
+    top: -5px;
+    width: 4px;
+    height: 20px;
+    background: yellow;
+    display: none;
+}
 </style>
 </head>
 <body>
 
 <h1>Ronald DJ – Double girl.mp3</h1>
-<p>Two copies of girl.mp3 so you can match your mix.</p>
+<p>Two copies so you can match your mix.</p>
 
 <!-- TRACK A -->
 <h2>Track A</h2>
-<button onclick="playA()">▶ Play A</button>
-<button onclick="pauseA()">⏸ Pause A</button>
-<button onclick="setCueA()">🎯 Set Cue A</button>
-<button onclick="jumpCueA()">⏩ Jump Cue A</button>
+<button class="button" onclick="audioA.play()">▶ Play A</button>
+<button class="button" onclick="audioA.pause()">⏸ Pause A</button>
+<button class="button" onclick="setCueA()">🎯 Set Cue A</button>
+<button class="button" onclick="jumpCueA()">⏩ Jump Cue A</button>
 
-<div class="progress-container" id="containerA" onclick="scrubA(event)">
-    <div id="barA" class="progress-bar"></div>
-    <div id="cueAmarker" class="cue-marker"></div>
+<div class="progress-container">
+    <input id="progressA" type="range" class="progress-bar" min="0" max="100" value="0">
+    <div id="cueMarkerA" class="cue-marker"></div>
 </div>
 
 <!-- TRACK B -->
 <h2>Track B</h2>
-<button onclick="playB()">▶ Play B</button>
-<button onclick="pauseB()">⏸ Pause B</button>
-<button onclick="setCueB()">🎯 Set Cue B</button>
-<button onclick="jumpCueB()">⏩ Jump Cue B</button>
+<button class="button" onclick="audioB.play()">▶ Play B</button>
+<button class="button" onclick="audioB.pause()">⏸ Pause B</button>
+<button class="button" onclick="setCueB()">🎯 Set Cue B</button>
+<button class="button" onclick="jumpCueB()">⏩ Jump Cue B</button>
 
-<div class="progress-container" id="containerB" onclick="scrubB(event)">
-    <div id="barB" class="progress-bar"></div>
-    <div id="cueBmarker" class="cue-marker"></div>
+<div class="progress-container">
+    <input id="progressB" type="range" class="progress-bar" min="0" max="100" value="0">
+    <div id="cueMarkerB" class="cue-marker"></div>
 </div>
 
 <script>
-let trackA = new Audio("girl.mp3");
-let trackB = new Audio("girl.mp3");
+let audioA = new Audio("girl.mp3");
+let audioB = new Audio("girl.mp3");
 
-let cueA = 0;
-let cueB = 0;
+let progressA = document.getElementById("progressA");
+let progressB = document.getElementById("progressB");
 
-// --- PLAY / PAUSE ---
-function playA() { trackA.play(); }
-function pauseA() { trackA.pause(); }
+let cueA = 0, cueB = 0;
 
-function playB() { trackB.play(); }
-function pauseB() { trackB.pause(); }
+let cueMarkerA = document.getElementById("cueMarkerA");
+let cueMarkerB = document.getElementById("cueMarkerB");
 
-// --- CUE SYSTEM ---
+// Update progress bar while playing
+audioA.addEventListener("timeupdate", () => {
+    progressA.value = (audioA.currentTime / audioA.duration) * 100;
+});
+audioB.addEventListener("timeupdate", () => {
+    progressB.value = (audioB.currentTime / audioB.duration) * 100;
+});
+
+// Dragging the slider seeks the track
+progressA.addEventListener("input", () => {
+    audioA.currentTime = (progressA.value / 100) * audioA.duration;
+});
+progressB.addEventListener("input", () => {
+    audioB.currentTime = (progressB.value / 100) * audioB.duration;
+});
+
+// Cue functions
 function setCueA() {
-    cueA = trackA.currentTime;
-    let percent = (cueA / trackA.duration) * 100;
-    let marker = document.getElementById("cueAmarker");
-    marker.style.left = percent + "%";
-    marker.style.display = "block";
+    cueA = audioA.currentTime;
+    cueMarkerA.style.left = (cueA / audioA.duration) * 100 + "%";
+    cueMarkerA.style.display = "block";
 }
-function jumpCueA() { trackA.currentTime = cueA; }
+function jumpCueA() {
+    audioA.currentTime = cueA;
+}
 
 function setCueB() {
-    cueB = trackB.currentTime;
-    let percent = (cueB / trackB.duration) * 100;
-    let marker = document.getElementById("cueBmarker");
-    marker.style.left = percent + "%";
-    marker.style.display = "block";
+    cueB = audioB.currentTime;
+    cueMarkerB.style.left = (cueB / audioB.duration) * 100 + "%";
+    cueMarkerB.style.display = "block";
 }
-function jumpCueB() { trackB.currentTime = cueB; }
-
-// --- SCRUBBING (Dragging the red bar) ---
-function scrubA(e) {
-    let rect = e.target.getBoundingClientRect();
-    let percent = (e.clientX - rect.left) / rect.width;
-    trackA.currentTime = percent * trackA.duration;
+function jumpCueB() {
+    audioB.currentTime = cueB;
 }
-function scrubB(e) {
-    let rect = e.target.getBoundingClientRect();
-    let percent = (e.clientX - rect.left) / rect.width;
-    trackB.currentTime = percent * trackB.duration;
-}
-
-// --- UPDATE PROGRESS BARS ---
-trackA.ontimeupdate = () => {
-    document.getElementById("barA").style.width =
-        (trackA.currentTime / trackA.duration) * 100 + "%";
-};
-trackB.ontimeupdate = () => {
-    document.getElementById("barB").style.width =
-        (trackB.currentTime / trackB.duration) * 100 + "%";
-};
 </script>
 
 </body>
